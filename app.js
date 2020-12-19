@@ -125,11 +125,11 @@ var UIController=(function(){
             if(type === 'inc'){
             element = DOMstrings.incomeContainer;
 
-            html = '<div class="item clearfix" id="income-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">$%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+            html = '<div class="item clearfix" id="income-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">Rs. %value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
             } else if(type === 'exp'){
             element = DOMstrings.expensesContainer;
 
-            html = '<div class="item clearfix" id="expense-%d%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">$%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+            html = '<div class="item clearfix" id="expense-%d%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">Rs. %value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
             }
             
             // replacing placeholder text with real data
@@ -157,10 +157,10 @@ var UIController=(function(){
         },
 
         displayBudget: function(obj){
-            document.querySelector(DOMstrings.budgetLabel).textContent = obj.budget;
-            document.querySelector(DOMstrings.incomeLabel).textContent = obj.totalInc;
-            document.querySelector(DOMstrings.expansesLabel).textContent = obj.totalExp;
-            document.querySelector(DOMstrings.percentageLabel).textContent = obj.percentage;
+            document.querySelector(DOMstrings.budgetLabel).textContent = 'Rs. '+obj.budget;
+            document.querySelector(DOMstrings.incomeLabel).textContent = 'Rs. '+obj.totalInc;
+            document.querySelector(DOMstrings.expansesLabel).textContent = 'Rs. '+obj.totalExp;
+            document.querySelector(DOMstrings.percentageLabel).textContent = obj.percentage+'%';
         },
 
         getDOMstrings: function(){

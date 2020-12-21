@@ -142,7 +142,9 @@ body {
     transition: border 0.3s;
 }
 
-.add__description { width: 400px;}
+.add__description { 
+    width: 400px;
+}
 .add__value { width: 100px;}
 
 .add__btn {

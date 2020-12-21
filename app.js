@@ -151,6 +151,28 @@ var UIController=(function(){
         dateLabel: '.budget__title--month'
     };
 
+    var formateNumber = function(num, type){
+        var numSplit, int, dec, type;
+
+        num = Math.abs(num);
+        num = num.toFixed(2);
+
+        numSplit = num.split('.');
+        int = numSplit[0];
+        if(int.length > 3){
+            int = int.substr(0, int.length - 3) + ',' + int.substr(int.length - 3, 3);
+        }
+        dec = numSplit[1];
+
+        return (type === 'exp' ? '-' : '+') + ' ' + int + '.' + dec;
+    };
+
+    var nodeListForEach = function(list, callback){
+        for(var i=0; i<list.length; i++){
+            callback(list[i], i);
+        }
+    };
+
     return{
         getInput: function(){
             return{
@@ -168,17 +190,17 @@ var UIController=(function(){
             if(type === 'inc'){
             element = DOMstrings.incomeContainer;
 
-            html = '<div class="item clearfix" id="inc-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">Rs. %value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+            html = '<div class="item clearfix" id="inc-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
             } else if(type === 'exp'){
             element = DOMstrings.expensesContainer;
 
-            html = '<div class="item clearfix" id="exp-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">Rs. %value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+            html = '<div class="item clearfix" id="exp-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
             }
             
             // replacing placeholder text with real data
             newHtml = html.replace('%id%', obj.id);
             newHtml = newHtml.replace('%description%', obj.description);
-            newHtml = newHtml.replace('%value%', obj.value);
+            newHtml = newHtml.replace('%value%', formateNumber(obj.value, type));
 
             // insert the HTML into DOM
             document.querySelector(element).insertAdjacentHTML('beforeend', newHtml);
@@ -205,9 +227,12 @@ var UIController=(function(){
         },
 
         displayBudget: function(obj){
-            document.querySelector(DOMstrings.budgetLabel).textContent = 'Rs. '+ obj.budget;
-            document.querySelector(DOMstrings.incomeLabel).textContent = 'Rs. '+ obj.totalInc;
-            document.querySelector(DOMstrings.expansesLabel).textContent = 'Rs. '+ obj.totalExp;
+            var type;
+            obj.budget > 0 ? type = 'inc' : type = 'exp';
+
+            document.querySelector(DOMstrings.budgetLabel).textContent = formateNumber(obj.budget, type);
+            document.querySelector(DOMstrings.incomeLabel).textContent = formateNumber(obj.totalInc, 'inc');
+            document.querySelector(DOMstrings.expansesLabel).textContent = formateNumber(obj.totalExp, 'exp');
             
             if(obj.percentage > 0){
                 document.querySelector(DOMstrings.percentageLabel).textContent = obj.percentage + '%';
@@ -218,12 +243,6 @@ var UIController=(function(){
 
         displayPercentages: function(percentages){
             var fields = document.querySelectorAll(DOMstrings.expensesPercLabel);
-
-            var nodeListForEach = function(list, callback){
-                for(var i=0; i<list.length; i++){
-                    callback(list[i], i);
-                }
-            };
 
             nodeListForEach(fields, function(current, index){
                 if(percentages[index] > 0){
@@ -243,6 +262,20 @@ var UIController=(function(){
             year = now.getFullYear();
 
             document.querySelector(DOMstrings.dateLabel).textContent = months[month] + ' ' + year;
+        },
+
+        changedType: function(){
+            var fields = document.querySelectorAll(
+                DOMstrings.inputType + ',' +
+                DOMstrings.inputDescription + ',' +
+                DOMstrings.inputValue
+            );
+
+            nodeListForEach(fields, function(curr){
+                curr.classList.toggle('red-focus'); 
+            });
+
+            document.querySelector(DOMstrings.inputBtn).classList.toggle('red');
         },
 
         getDOMstrings: function(){
@@ -268,6 +301,8 @@ var controller=(function(budgetCtrl, UIctrl){
         });
 
         document.querySelector(DOM.container).addEventListener('click', ctrlDeleteItem);
+
+        document.querySelector(DOM.inputType).addEventListener('change', UIctrl.changedType);
     };
 
     var updateBudget = function(){
